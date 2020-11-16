@@ -3,10 +3,8 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
-
-
-
-void Inject(DWORD pid, std::string target, std::string replacement);
+#define COMPILE_DLL_XHTYE102474
+#include "dllmain.h"
 
 BOOL APIENTRY DllMain(HMODULE hModule,
 	DWORD  ul_reason_for_call,
@@ -18,7 +16,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 	{
 	case DLL_PROCESS_ATTACH:
 		std::cout << "DLL PROCESS ATTACH" << std::endl;
-		Inject(GetCurrentProcessId(), "Hello World!", "You were hacked");
+		inject(GetCurrentProcessId(), "Hello World!", "You were hacked");
 	case DLL_THREAD_ATTACH:
 		std::cout << "DLL THREAD ATTACH" << std::endl;
 	case DLL_THREAD_DETACH:
@@ -29,7 +27,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 	}
 	return TRUE;
 }
-void Inject(DWORD pid, std::string target, std::string replacement) {
+_declspec(dllexport) void __stdcall inject(DWORD pid, std::string target, std::string replacement) {
 	std::cout << "Меняем '" << target << "' На '" << replacement << "'" << std::endl;
 
 	HANDLE processHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);

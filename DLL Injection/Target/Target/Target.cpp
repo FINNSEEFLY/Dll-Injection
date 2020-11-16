@@ -10,6 +10,6 @@ int main()
 	s = strcpy(s, "Hello World!");
 	while (true) {
 		std::cout << s << std::endl;
-		Sleep(1500);
+		Sleep(500);
 	}
 }

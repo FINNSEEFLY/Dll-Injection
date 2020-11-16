@@ -2,8 +2,8 @@
 //
 
 #include <iostream>
-#include <utility>
-#include "windows.h"
+#include "Windows.h"
+#include "dllmain.h"
 
 int main()
 {
@@ -11,6 +11,7 @@ int main()
 	DWORD pid;
 	HANDLE targetProcess;
 	const char* dllPath = "../../InjectorDll/Debug/InjectorDll.dll";
+	const char* injectDecoratedName = "?inject@@YGXKV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@0@Z";
 	std::cout << "Введите номер процесса для внедрения: ";
 	std::cin >> pid;
 
@@ -24,6 +25,22 @@ int main()
 		std::cout << "DLL внедрена" << std::endl;
 		CloseHandle(remoteThread);
 		CloseHandle(targetProcess);
+		Sleep(1000);
+		inject(pid, "You were hacked", "static hack");
+		Sleep(2000);
+		HMODULE HModule = LoadLibrary(L"../../InjectorDll/Debug/InjectorDll.dll");
+		typedef void __stdcall Tinject(DWORD pid, std::string target, std::string replacement);
+		if (HModule != 0) {
+			Tinject* injectFromDll = (Tinject*)GetProcAddress(HModule, injectDecoratedName);
+			if (injectFromDll == 0) {
+				int x = GetLastError();
+				std::cout << x;
+			}
+			else {
+				injectFromDll(pid, "static hack", "dynamic hack");
+			}
+		}
+		FreeLibrary(HModule);
 	}
 	else {
 		std::cout << "Ошибка при получении дискриптора процесса" << std::endl;
